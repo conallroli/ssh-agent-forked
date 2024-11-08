@@ -16,6 +16,8 @@ try {
     const sshAddCmd = sshAddCmdInput ? sshAddCmdInput : sshAddCmdDefault;
     const gitCmd = gitCmdInput ? gitCmdInput : gitCmdDefault;
 
+    console.log("Blah blah blah blah, this should appear on Github Actions logs");
+
     if (!privateKey) {
         core.setFailed("The ssh-private-key argument is empty. Maybe the secret has not been configured, or you are using a wrong secret name in your workflow file.");
 
