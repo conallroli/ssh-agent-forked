@@ -336,7 +336,10 @@ try {
     const sshAddCmd = sshAddCmdInput ? sshAddCmdInput : sshAddCmdDefault;
     const gitCmd = gitCmdInput ? gitCmdInput : gitCmdDefault;
 
-    console.log("Blah blah blah blah, this should appear on Github Actions logs");
+    console.log(`sshAgentCmd: ${sshAgentCmd}`);
+    console.log(`sshAddCmd: ${sshAddCmd}`);
+    console.log(`gitCmd: ${gitCmd}`);
+    console.log(`homePath: ${homePath}`);
 
     if (!privateKey) {
         core.setFailed("The ssh-private-key argument is empty. Maybe the secret has not been configured, or you are using a wrong secret name in your workflow file.");
@@ -2906,20 +2909,26 @@ exports.default = _default;
 
 const os = __webpack_require__(87);
 
-module.exports = (process.env['OS'] != 'Windows_NT') ? {
-    // Use getent() system call, since this is what ssh does; makes a difference in Docker-based
-    // Action runs, where $HOME is different from the pwent
-    homePath: os.userInfo().homedir,
-    sshAgentCmdDefault: 'ssh-agent',
-    sshAddCmdDefault: 'ssh-add',
-    gitCmdDefault: 'git'
-} : {
-    // Assuming GitHub hosted `windows-*` runners for now
-    homePath: os.homedir(),
-    sshAgentCmdDefault: 'c://progra~1//git//usr//bin//ssh-agent.exe',
-    sshAddCmdDefault: 'c://progra~1//git//usr//bin//ssh-add.exe',
-    gitCmdDefault: 'c://progra~1//git//bin//git.exe'
-};
+if (process.env['OS'] != 'Windows_NT') {
+    console.log(`process.env['OS'] != 'Windows_NT' === true, using POSIX-like ssh / git`)
+    module.exports = {
+        // Use getent() system call, since this is what ssh does; makes a difference in Docker-based
+        // Action runs, where $HOME is different from the pwent
+        homePath: os.userInfo().homedir,
+        sshAgentCmdDefault: 'ssh-agent',
+        sshAddCmdDefault: 'ssh-add',
+        gitCmdDefault: 'git'
+    };
+} else {
+    console.log(`process.env['OS'] != 'Windows_NT' === false, using Windows-like ssh / git`)
+    module.exports = {
+        // Assuming GitHub hosted `windows-*` runners for now
+        homePath: os.homedir(),
+        sshAgentCmdDefault: 'c://progra~1//git//usr//bin//ssh-agent.exe',
+        sshAddCmdDefault: 'c://progra~1//git//usr//bin//ssh-add.exe',
+        gitCmdDefault: 'c://progra~1//git//bin//git.exe'
+    };
+}
 
 
 /***/ })
